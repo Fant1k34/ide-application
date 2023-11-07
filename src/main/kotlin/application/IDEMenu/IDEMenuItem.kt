@@ -11,9 +11,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import application.modifyIDEMenu
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -36,36 +36,41 @@ fun IDEMenuItem(
     Box {
         Button(
             onClick = setOpen,
-            shape = RoundedCornerShape(0f, 0f, if (isLast) 8f else 0f, if (isFirst) 8f else 0f),
+            shape = RoundedCornerShape(
+                0f,
+                0f,
+                if (isLast) modifyIDEMenu(8f) else 0f,
+                if (isFirst) modifyIDEMenu(8f) else 0f
+            ),
             colors = ButtonDefaults.outlinedButtonColors(),
             contentPadding = PaddingValues(),
-            modifier = Modifier.height(24.dp).defaultMinSize(minWidth = 1.dp, minHeight = 1.dp)
+            modifier = Modifier.height(modifyIDEMenu(24.dp)).defaultMinSize(minWidth = 1.dp, minHeight = 1.dp)
         ) {
             Text(
                 optionText,
                 color = Color.Black,
-                fontSize = 14.sp,
+                fontSize = modifyIDEMenu(14.sp),
                 style = MaterialTheme.typography.body2,
-                modifier = Modifier.padding(horizontal = 4.dp)
+                modifier = Modifier.padding(horizontal = modifyIDEMenu(4.dp))
             )
         }
 
         DropdownMenu(
             DropdownMenuState(
                 if (isOpen.value) (DropdownMenuState.Status.Open(
-                    position = Offset(0F, 30F)
+                    position = Offset(0F, modifyIDEMenu(30F))
                 )) else DropdownMenuState.Status.Closed
             ), onDismissRequest = setClose
         ) {
             optionItems.map {
                 Text(
                     it.key, color = Color.Black,
-                    fontSize = 14.sp,
+                    fontSize = modifyIDEMenu(14.sp),
                     style = MaterialTheme.typography.body2,
                     modifier = Modifier.onClick {
                         it.value()
                         setClose()
-                    }.padding(all = 2.dp)
+                    }.padding(all = modifyIDEMenu(2.dp))
                 )
             }
         }

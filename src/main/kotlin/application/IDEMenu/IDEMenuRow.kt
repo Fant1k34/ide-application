@@ -9,7 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
+import application.*
 
 enum class IDEMenuOptions {
     Project,
@@ -20,7 +20,7 @@ enum class IDEMenuOptions {
 fun IDEMenuRow() {
     Row(
         modifier = Modifier.drawBehind {
-            val strokeWidth = 4f
+            val strokeWidth = modifyIDEMenu(4f)
             val y = size.height + strokeWidth / 2
 
             drawLine(
@@ -46,8 +46,11 @@ fun IDEMenuRow() {
             IDEMenuOptions.Configuration,
             "Configuration",
             mapOf(
-                "Configuration" to { println("Configuration") },
-                "Configuration Configuration" to { println("Configuration Configuration") })
+                "Upscale menu" to { increaseIDEMenuSizeCoefficient() },
+                "Downscale menu" to { decreaseIDEMenuSizeCoefficient() },
+                "Upscale features" to { increaseIDEFeatureCoefficient() },
+                "Downscale features" to { decreaseIDEFeatureCoefficient() },
+            )
         )
 
         IDEMenuItem(
