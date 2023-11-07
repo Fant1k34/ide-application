@@ -1,4 +1,4 @@
-package textStructure
+package application.textStructure
 
 interface TextStructureInterface {
     fun moveCarriage(ind: Int, direction: Direction): Int

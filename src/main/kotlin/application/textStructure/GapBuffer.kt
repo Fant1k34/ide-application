@@ -1,4 +1,4 @@
-package textStructure
+package application.textStructure
 
 // gapBufferSize > 2
 // buffer содержит строку
