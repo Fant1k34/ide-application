@@ -28,24 +28,24 @@ fun IDEFeatureItem(
     // onClick - действие по клику
     onClick: () -> Unit,
     // onHover - действие по наведение на фичу
-    onHover: () -> Unit = {},
+    onHover: () -> Unit = {}
 ) {
     Button(
         onClick = onClick,
         shape = RoundedCornerShape(
-            modifyIDEFeature(4f),
-            modifyIDEFeature(4f),
-            modifyIDEFeature(4f),
-            modifyIDEFeature(4f)
+            modifyIDEFeature(0f),
+            modifyIDEFeature(8f),
+            modifyIDEFeature(8f),
+            modifyIDEFeature(0f)
         ),
         colors = ButtonDefaults.outlinedButtonColors(),
         contentPadding = PaddingValues(),
         modifier = Modifier.padding(
-            top = modifyIDEFeature(2.dp),
-            bottom = modifyIDEFeature(2.dp),
-            start = modifyIDEFeature(2.dp),
-            end = modifyIDEFeature(2.dp)
-        ).size(modifyIDEFeature(36.dp))
+            top = modifyIDEFeature(4.dp),
+            bottom = modifyIDEFeature(4.dp),
+            end = modifyIDEFeature(4.dp)
+        ).width(modifyIDEFeature(36.dp))
+            .height(modifyIDEFeature(48.dp))
             .defaultMinSize(minWidth = 1.dp, minHeight = 1.dp)
     ) {
         Text(

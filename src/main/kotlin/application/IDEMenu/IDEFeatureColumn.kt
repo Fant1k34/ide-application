@@ -2,15 +2,21 @@ package application.IDEMenu
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.Button
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import application.IDEContent.Widgets
 import application.modifyIDEFeature
 
 @Composable
-fun IDEFeatureColumn() {
+fun IDEFeatureColumn(
+    choseWidget: (chosen: Widgets) -> Unit,
+//    updateBottomWidget: () -> Unit
+) {
     Column(
         modifier = Modifier.drawBehind {
             val strokeWidth = 4f
@@ -28,13 +34,18 @@ fun IDEFeatureColumn() {
     ) {
         Column {
             IDEFeatureItem(
-                featureName = "C",
-                featurePlace = FeaturePlace.RIGHT,
-                onClick = { println("Кликнули по коду") })
+                featureName = "PS",
+                featurePlace = FeaturePlace.LEFT,
+                onClick = {
+                    choseWidget(Widgets.PROJECT_STRUCTURE)
+                })
+
             IDEFeatureItem(
                 featureName = "G",
-                featurePlace = FeaturePlace.RIGHT,
-                onClick = { println("Тут типо будет Гит") })
+                featurePlace = FeaturePlace.LEFT,
+                onClick = {
+                    choseWidget(Widgets.GIT)
+                })
         }
 
         Column(
