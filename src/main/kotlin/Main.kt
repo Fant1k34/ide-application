@@ -1,5 +1,8 @@
-import application.getApp
+import application.getAndStartApp
 
+/**
+ * main function that get application and run
+ */
 fun main() {
-    getApp()
+    getAndStartApp()
 }

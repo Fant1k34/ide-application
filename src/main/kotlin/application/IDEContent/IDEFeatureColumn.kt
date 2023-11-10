@@ -1,24 +1,28 @@
-package application.IDEMenu
+package application.IDEContent
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Button
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import application.IDEContent.Widgets
-import application.modifyIDEFeature
+import application.Widgets.Widgets
 
+/**
+ * IDEFeatureColumn is Column with buttons to show (or hide) left widget
+ * When user clicks on IDEFeatureItem, it invokes function with it's Widget enum value
+ * And this function update state of IDEContentRow
+ *
+ * IDEFeatureColumn defines possible features, and it's place (left or bottom) with updating parents state function
+ */
 @Composable
 fun IDEFeatureColumn(
-    choseWidget: (chosen: Widgets) -> Unit,
-//    updateBottomWidget: () -> Unit
+    choseLeftWidget: (chosen: Widgets) -> Unit,
 ) {
     Column(
         modifier = Modifier.drawBehind {
+            // To draw a line-divider
             val strokeWidth = 4f
             val x = size.width + strokeWidth / 2
 
@@ -34,18 +38,16 @@ fun IDEFeatureColumn(
     ) {
         Column {
             IDEFeatureItem(
-                featureName = "PS",
-                featurePlace = FeaturePlace.LEFT,
-                onClick = {
-                    choseWidget(Widgets.PROJECT_STRUCTURE)
-                })
+                feature = Widgets.PROJECT_STRUCTURE,
+                featureName = "P",
+                choseLeftWidget = choseLeftWidget,
+            )
 
             IDEFeatureItem(
+                feature = Widgets.GIT,
                 featureName = "G",
-                featurePlace = FeaturePlace.LEFT,
-                onClick = {
-                    choseWidget(Widgets.GIT)
-                })
+                choseLeftWidget = choseLeftWidget
+            )
         }
 
         Column(
@@ -53,13 +55,15 @@ fun IDEFeatureColumn(
                 .fillMaxHeight(), verticalArrangement = Arrangement.Bottom
         ) {
             IDEFeatureItem(
+                feature = Widgets.RUNTIME,
                 featureName = "R",
-                featurePlace = FeaturePlace.RIGHT,
-                onClick = { println("Кликнули по коду") })
+                choseLeftWidget = choseLeftWidget
+            )
             IDEFeatureItem(
+                feature = Widgets.DEBUG,
                 featureName = "D",
-                featurePlace = FeaturePlace.RIGHT,
-                onClick = { println("Тут типо будет Гит") })
+                choseLeftWidget = choseLeftWidget
+            )
         }
     }
 }

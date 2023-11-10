@@ -1,4 +1,4 @@
-package application.IDEMenu
+package application.IDEContent
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -11,27 +11,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import application.Widgets.Widgets
 import application.modifyIDEFeature
 
-enum class FeaturePlace {
-    LEFT,
-    RIGHT,
-    BOTTOM,
-}
+/**
+ * IDEFeatureItem is Component for feature button
+ */
 
 @Composable
 fun IDEFeatureItem(
-    // featureName - имя фичи в панели слева в IDE
+    feature: Widgets,
     featureName: String,
-    // featurePlace - месторасположение фичи (справа (код), слева (файлы или гит), снизу (runtime, debug))
-    featurePlace: FeaturePlace,
-    // onClick - действие по клику
-    onClick: () -> Unit,
-    // onHover - действие по наведение на фичу
-    onHover: () -> Unit = {}
+    // choseLeftWidget is function for updating state of left widget in parent component
+    choseLeftWidget: (Widgets) -> Unit,
 ) {
     Button(
-        onClick = onClick,
+        onClick = {
+            choseLeftWidget(feature)
+        },
         shape = RoundedCornerShape(
             modifyIDEFeature(0f),
             modifyIDEFeature(8f),

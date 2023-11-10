@@ -3,7 +3,6 @@ package application.IDEMenu
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -11,11 +10,12 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import application.*
 
-enum class IDEMenuOptions {
-    Project,
-    Configuration
-}
-
+/**
+ * IDEMenuRow is IDE Menu to configure IDE.
+ * It describes how IDE Menu items should be named, and how it's subItems
+ * should be named and what these subItems should do by clicking on them
+ * TODO: Make these actions @Composable
+ */
 @Composable
 fun IDEMenuRow() {
     Row(
@@ -34,7 +34,6 @@ fun IDEMenuRow() {
         )
     ) {
         IDEMenuItem(
-            IDEMenuOptions.Project,
             "Project",
             mapOf(
                 "Set project" to { println("Setting the project, bla bla bla") },
@@ -43,7 +42,6 @@ fun IDEMenuRow() {
         )
 
         IDEMenuItem(
-            IDEMenuOptions.Configuration,
             "Configuration",
             mapOf(
                 "Upscale menu" to { increaseIDEMenuSizeCoefficient() },
@@ -54,7 +52,6 @@ fun IDEMenuRow() {
         )
 
         IDEMenuItem(
-            IDEMenuOptions.Configuration,
             "Configuration 2",
             mapOf(
                 "Configuration" to { println("Configuration") },
@@ -62,7 +59,6 @@ fun IDEMenuRow() {
         )
 
         IDEMenuItem(
-            IDEMenuOptions.Configuration,
             "Configuration 3",
             mapOf(
                 "Configuration" to { println("Configuration") },

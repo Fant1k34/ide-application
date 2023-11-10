@@ -1,7 +1,7 @@
-package application.state
+package application.Widgets.code.editor.state
 
-import application.textStructure.GapBuffer
-import application.textStructure.TextStructureInterface
+import application.Widgets.code.editor.textStructure.GapBuffer
+import application.Widgets.code.editor.textStructure.TextStructureInterface
 
 class ApplicationState(var bufferObject: TextStructureInterface = GapBuffer(gapBufferSize = 4, text = "  frr  ")) {
     val printableCharacters =

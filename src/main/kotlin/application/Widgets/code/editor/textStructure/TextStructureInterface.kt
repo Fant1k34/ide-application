@@ -1,4 +1,4 @@
-package application.textStructure
+package application.Widgets.code.editor.textStructure
 
 interface TextStructureInterface {
     fun moveCarriage(ind: Int, direction: Direction): Int

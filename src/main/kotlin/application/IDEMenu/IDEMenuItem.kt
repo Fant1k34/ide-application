@@ -15,18 +15,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import application.modifyIDEMenu
 
+/**
+ * IDEMenuItem is button in top IDE menu with optionText name
+ * By clicking on its name the dropdown element appears based on optionItems
+ * By clicking on option from optionItems the corresponding function calls
+ * If this IDEMenuItem is the first item or the last one in the IDEMenu, you should mark true corresponding argument
+ */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun IDEMenuItem(
-    // option - enum элемент строки настройки IDE
-    option: IDEMenuOptions,
-    // optionText - текст настройки IDE (например как File, Edit, View, Navigate... в IDEA)
     optionText: String,
-    // optionItems - Строка из вложенных элементов в этот option с действиями по кликам на неё
     optionItems: Map<String, () -> Unit>,
-    // Является ли первой вкладкой
     isFirst: Boolean = false,
-    // Является ли последней вкладкой
     isLast: Boolean = false,
 ) {
     val isOpen = remember { mutableStateOf(false) }

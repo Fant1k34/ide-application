@@ -1,4 +1,4 @@
-package application.textStructure
+package application.Widgets.code.editor.textStructure
 
 // gapBufferSize > 2
 // buffer содержит строку

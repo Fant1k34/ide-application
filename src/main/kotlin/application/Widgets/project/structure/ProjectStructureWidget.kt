@@ -1,4 +1,4 @@
-package application.IDEContent.widgets.project.structure
+package application.Widgets.project.structure
 
 import androidx.compose.material.Button
 import androidx.compose.material.Text

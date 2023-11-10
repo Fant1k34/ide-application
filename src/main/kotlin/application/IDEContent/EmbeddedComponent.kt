@@ -2,9 +2,13 @@ package application.IDEContent
 
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import application.Widgets.Widgets
 
+/**
+ * EmbeddedComponent shows current @Composable Action Component
+ */
 @Composable
-fun updateLeftWidget(chosenWidget: Widgets?, action: @Composable () -> Unit) {
+fun EmbeddedComponent(chosenWidget: Widgets?, action: @Composable () -> Unit) {
     if (chosenWidget != null) {
         action()
     } else {
