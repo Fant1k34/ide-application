@@ -1,8 +1,9 @@
 package application.Widgets.code.editor.textStructure
 
 interface TextStructureInterface {
-    fun moveCarriage(ind: Int, direction: Direction): Int
-    fun addSymbol(ind: Int, symbol: Char): Int
-    fun deleteSymbol(ind: Int, direction: Direction): Int
+    // Возвращает символ, который был пересечен кареткой или null
+    fun moveCarriage(direction: Direction): Char?
+    fun addSymbol(symbol: Char)
+    fun deleteSymbol(direction: Direction)
     fun showText(): String
 }

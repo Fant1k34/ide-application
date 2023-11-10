@@ -1,87 +1,144 @@
 package application.Widgets.code.editor
 
-import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.focusable
+import androidx.compose.animation.animateColor
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.*
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.onClick
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.input.key.*
 import androidx.compose.ui.text.*
-import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import application.Widgets.code.editor.state.ApplicationState
 import application.Widgets.code.editor.textStructure.Direction
+import application.Widgets.code.editor.textStructure.GapBuffer
+import kotlinx.coroutines.delay
 
-val applicationState = ApplicationState();
-var lineToShow = mutableStateOf(applicationState.bufferObject.showText())
-var ind = 0;
+val printableCharacters =
+    "`~ёЁ!1@2\"3№#4;$5%6:^7&?8*9(0)-_+=qwertyuiop[{]}asdfghjkl;':zxcvbnm,<.>/?йцукенгшщзхъ/\\|фывапролджэячсмитьбю., QWERTYUIOPLKJHGFDSAZXCVBNMЁЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮ\n\t".toCharArray()
+
+val bufferObject = GapBuffer(gapBufferSize = 4, text = "01234567")
+var lineToShow = mutableStateOf(bufferObject.showText())
 
 @OptIn(ExperimentalTextApi::class, ExperimentalComposeUiApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun CodeEditor() {
-    val textMeasurer = rememberTextMeasurer()
+    // Определяем фокусировку
     val requester = remember { FocusRequester() }
+    val isFocused = remember { mutableStateOf(false) }
 
-    Canvas(modifier = Modifier.fillMaxSize()
+    // Место каретки в тексте
+    val carriagePlace = remember { mutableStateOf(bufferObject.carriage) }
+
+    val textMeasurer = rememberTextMeasurer()
+
+    val infiniteTransition = rememberInfiniteTransition(label = "infinite transition")
+    val animatedColor = infiniteTransition.animateColor(
+        initialValue = Color.Black,
+        targetValue = Color.White,
+        animationSpec = infiniteRepeatable(tween(1000), RepeatMode.Restart),
+        label = "color"
+    )
+
+    val currentModifier = if (isFocused.value) (Modifier.fillMaxSize()
+        .border(1.5.dp, Color.DarkGray, RectangleShape)) else Modifier.fillMaxSize()
+
+    Canvas(modifier = currentModifier
         .onClick { requester.requestFocus() }
+        // Обрабатываем нажатия кнопок в случае фокусировки на этом канвасе
         .onKeyEvent {
             if (it.type == KeyEventType.KeyUp) {
-                if (it.key == Key.DirectionRight) {
-                    ind = applicationState.bufferObject.moveCarriage(ind, Direction.RIGHT);
+                when (it.key) {
+                    Key.DirectionRight -> bufferObject.moveCarriage(Direction.RIGHT)
+                    Key.DirectionLeft -> bufferObject.moveCarriage(Direction.LEFT)
+                    Key.DirectionUp -> while (!listOf(
+                            null,
+                            '\n'
+                        ).contains(bufferObject.moveCarriage(Direction.LEFT))
+                    ) {
+                    }
+
+                    Key.DirectionDown -> while (!listOf(
+                            null,
+                            '\n'
+                        ).contains(bufferObject.moveCarriage(Direction.RIGHT))
+                    ) {
+                    }
+
+                    Key.Tab -> repeat(4) { bufferObject.addSymbol(' ') }
+
+                    Key.Backspace -> bufferObject.deleteSymbol(Direction.LEFT)
+                    Key.Enter -> bufferObject.addSymbol('\n')
+                    else -> bufferObject.addSymbol(it.utf16CodePoint.toChar())
                 }
 
-                if (it.key == Key.DirectionLeft) {
-                    ind = applicationState.bufferObject.moveCarriage(ind, Direction.LEFT);
-                }
-
-                if (it.key == Key.Backspace) {
-                    ind = applicationState.bufferObject.deleteSymbol(ind, Direction.LEFT);
-                }
-
-                if (it.key == Key.Enter) {
-                    ind = applicationState.bufferObject.addSymbol(ind, '\n');
-                }
-
-                if (applicationState.printableCharacters.contains(it.utf16CodePoint.toChar())) {
-                    ind = applicationState.bufferObject.addSymbol(ind, it.utf16CodePoint.toChar())
-                }
-
-                lineToShow.value = applicationState.bufferObject.showText()
+                carriagePlace.value = bufferObject.carriage
+                lineToShow.value = bufferObject.showText()
             }
             true
         }.focusRequester(requester)
+        .onFocusChanged { focusState -> isFocused.value = focusState.isFocused }
         .focusable()
     ) {
-        lineToShow.let {
-            val line = it.value
+        val line = lineToShow.value
 
-            val measuredText = textMeasurer.measure(
-                text = buildAnnotatedString {
-                    append(line.slice(0 until ind))
-                    withStyle(style = SpanStyle(textDecoration = TextDecoration.Underline)) {
-                        append(line[ind])
-                    }
-                    append(line.slice(ind + 1 until line.length))
-                },
-                style = TextStyle(fontSize = 20.sp)
-            )
+        // Рисуем весь текст черным цветом без прозрачности
+        val measuredText = textMeasurer.measure(
+            text = buildAnnotatedString {
+                withStyle(style = SpanStyle(brush = SolidColor(Color.Black), alpha = 1f)) {
+                    append(line.slice(0 until carriagePlace.value))
+                    append(line.slice(carriagePlace.value until line.length))
+                }
+            },
+            style = TextStyle(fontSize = 20.sp)
+        )
 
-            translate(100f, 100f) {
-                drawText(measuredText)
+        // Рисуем текст до каретки полностью прозрачным (цвет не важен), а затем рисуем НЕ прозрачным символ каретки ⎸
+        val measuredCarriage = textMeasurer.measure(
+            text = buildAnnotatedString {
+                withStyle(style = SpanStyle(brush = SolidColor(Color.Black), alpha = 0f)) {
+                    append(line.slice(0 until carriagePlace.value))
+                }
+                withStyle(
+                    style = SpanStyle(
+                        brush = SolidColor(animatedColor.value),
+                        alpha = 1f,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Black
+                    )
+                ) {
+                    append("⎸")
+                }
+            },
+            style = TextStyle(fontSize = 20.sp)
+        )
+
+        // За счет работы функции рендеринга первый текст отрисовывается полностью, а второй накладывается на первый
+        // Вследствие того, что во втором тексте все прозрачное, кроме символа каретки,
+        // то мы просто наложили символ каретки на первый текст, не двигая постоянно символы
+        translate(100f, 100f) {
+            drawText(measuredText)
+            if (isFocused.value) {
+                drawText(measuredCarriage)
             }
         }
     }
 
-    LaunchedEffect(Unit) {
-        requester.requestFocus()
-    }
+//    LaunchedEffect(Unit) {
+//        requester.requestFocus()
+//    }
 }

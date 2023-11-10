@@ -6,11 +6,13 @@ package application.Widgets.code.editor.textStructure
 // Индекс действия (индекс каретки) должен совпадать с leftPointer
 // Если вставляем символы, то меняем gapBufferSize
 class GapBuffer(private var gapBufferSize: Int = 32, textBuffer: MutableList<Char?>) : TextStructureInterface {
-    private val defaultGapBufferSize: Int = gapBufferSize;
+    private val defaultGapBufferSize: Int = gapBufferSize
 
     // Левый и правый указатели на gapBuffer, оба включительно
-    private var leftPointer = 0;
-    private var rightPointer = gapBufferSize - 1;
+    private var leftPointer = 0
+    private var rightPointer = gapBufferSize - 1
+
+    val carriage: Int get() = leftPointer
 
     // Общий буффер с текстом
     private val buffer: MutableList<Char?> = MutableList(gapBufferSize) { null }.let { list1 ->
@@ -23,51 +25,51 @@ class GapBuffer(private var gapBufferSize: Int = 32, textBuffer: MutableList<Cha
     // Инициализируем: размер для gapBuffer и размер будущего текста (по началу будет заполнение null)
     constructor(gapBufferSize: Int, amountOfSymbols: Int) : this(gapBufferSize, MutableList(amountOfSymbols) { null })
 
-    override fun moveCarriage(ind: Int, direction: Direction): Int {
-        if (ind != leftPointer) throw Exception("Положение каретки не совпадает с указателями на Gap Buffer")
+    override fun moveCarriage(direction: Direction): Char? {
+        val crossedChar: Char
 
         if (direction == Direction.RIGHT) {
             // Если каретка стоит после последнего реального символа
-            if (ind > buffer.size - gapBufferSize - 1) {
-                return ind;
+            if (leftPointer > buffer.size - gapBufferSize - 1) {
+                return null
             }
 
             // Смещаем буффер на один символ вправо, то есть перекидываем самый правый символ после буфера - до буфера
+            buffer[leftPointer] = buffer[leftPointer + gapBufferSize]
+            buffer[leftPointer + gapBufferSize] = null
+            crossedChar = buffer[leftPointer] ?: throw Exception("Ошибка в рассчете crossedChar")
+
             leftPointer += 1
             rightPointer += 1
-
-            buffer[ind] = buffer[ind + gapBufferSize]
-            buffer[ind + gapBufferSize] = null
-
-            return ind + 1
         } else {
             // Если каретка стоит на самом левом положении
-            if (ind <= 0) {
-                return ind;
+            if (leftPointer <= 0) {
+                return null
             }
 
             // Смещаем буффер на один символ влево
+            buffer[leftPointer + gapBufferSize - 1] = buffer[leftPointer - 1]
+            buffer[leftPointer - 1] = null
+            crossedChar = buffer[leftPointer + gapBufferSize - 1] ?: throw Exception("Ошибка в рассчете crossedChar")
+
             leftPointer -= 1
             rightPointer -= 1
-
-            buffer[ind + gapBufferSize - 1] = buffer[ind - 1]
-            buffer[ind - 1] = null
-
-            return ind - 1
         }
+
+        return crossedChar
     }
 
-    override fun addSymbol(ind: Int, symbol: Char): Int {
-        if (ind != leftPointer) throw Exception("Положение каретки не совпадает с указателями на Gap Buffer")
-
+    override fun addSymbol(symbol: Char) {
         // Вставляем символ в буффер
+        buffer[leftPointer] = symbol
         leftPointer += 1
         gapBufferSize -= 1
-        buffer[ind] = symbol
 
         // Если размер буффера стал 0
         if (gapBufferSize < 1) {
             if (leftPointer != rightPointer + 1) throw Exception("Gap Buffer должен быть пустым. Но на него сбиты указатели")
+            // Подсчитываем сдвиг, на сколько символов нужно будет возвращать левый указатель в изначальное положение
+            val shift = buffer.size - leftPointer
 
             // Генерируем новый буффер в конце
             leftPointer = buffer.size
@@ -84,33 +86,24 @@ class GapBuffer(private var gapBufferSize: Int = 32, textBuffer: MutableList<Cha
             // На этом этапе все хорошо, мы создали новый gap buffer в конце buffer
             // Но нужно передвинуть каретку на исходное положение
 
-            var pseudoCarret = leftPointer;
-            // Двигаем каретку в то положение, в котором она была изначально + 1 (вставка символа)
-            while (pseudoCarret != ind + 1) {
-                pseudoCarret = moveCarriage(pseudoCarret, Direction.LEFT)
+            // Двигаем каретку в то положение, в котором она была изначально
+            repeat(shift) {
+                moveCarriage(Direction.LEFT)
             }
-            return pseudoCarret
-        } else {
-            // Если размер буфера не ноль
-            return ind + 1
         }
     }
 
-    override fun deleteSymbol(ind: Int, direction: Direction): Int {
+    override fun deleteSymbol(direction: Direction) {
         if (direction == Direction.LEFT) {
-            if (ind > 0 && ind <= buffer.size - gapBufferSize) {
+            if (leftPointer > 0 && leftPointer <= buffer.size - gapBufferSize) {
+                buffer[leftPointer - 1] = null
                 leftPointer -= 1
-                buffer[ind - 1] = null
                 gapBufferSize += 1
-
-                return ind - 1
             }
-
-            return ind;
         }
 
         // TODO: Implement Delete by Delete button
-        return ind;
+        return
     }
 
     override fun showText(): String = buffer.filterNotNull().joinToString("")
