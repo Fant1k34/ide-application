@@ -1,11 +1,11 @@
 package application.Widgets.code.editor
 
 import androidx.compose.animation.animateColor
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -13,8 +13,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.SolidColor
@@ -24,15 +22,13 @@ import androidx.compose.ui.text.*
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import application.Widgets.bufferObject
 import application.Widgets.code.editor.textStructure.Direction
-import application.Widgets.code.editor.textStructure.GapBuffer
-import kotlinx.coroutines.delay
+import application.Widgets.lineToShow
+import application.compiler.Compiler
 
 val printableCharacters =
     "`~ёЁ!1@2\"3№#4;$5%6:^7&?8*9(0)-_+=qwertyuiop[{]}asdfghjkl;':zxcvbnm,<.>/?йцукенгшщзхъ/\\|фывапролджэячсмитьбю., QWERTYUIOPLKJHGFDSAZXCVBNMЁЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮ\n\t".toCharArray()
-
-val bufferObject = GapBuffer(gapBufferSize = 4, text = "01234567")
-var lineToShow = mutableStateOf(bufferObject.showText())
 
 @OptIn(ExperimentalTextApi::class, ExperimentalComposeUiApi::class, ExperimentalFoundationApi::class)
 @Composable
@@ -138,7 +134,7 @@ fun CodeEditor() {
         }
     }
 
-//    LaunchedEffect(Unit) {
-//        requester.requestFocus()
+//    LaunchedEffect(lineToShow.value) {
+//
 //    }
 }
