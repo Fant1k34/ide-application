@@ -4,25 +4,16 @@ import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
-import application.Widgets.bufferObject
 import application.Widgets.projectDir
 import application.Widgets.setProjectDir
-import application.compiler.Compiler
+import application.Widgets.updateBufferObject
 import com.darkrockstudios.libraries.mpfilepicker.DirectoryPicker
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.newFixedThreadPoolContext
-import kotlinx.coroutines.newSingleThreadContext
+import java.io.File
 
 val currentCodeOutput = mutableStateOf("")
 val isProjectChosen = mutableStateOf(false)
 val isModalOfDirectoryChoiceOpen = mutableStateOf(false)
 
-@OptIn(DelicateCoroutinesApi::class, ExperimentalCoroutinesApi::class)
 @Composable
 fun projectStructureWidget() {
     Button(onClick = { isModalOfDirectoryChoiceOpen.value = true }) {
@@ -38,8 +29,11 @@ fun projectStructureWidget() {
             }
         }
     }
+    val projectPath = projectDir.value ?: return
 
-    if (projectDir.value == null) return
-
-    Text(projectDir.value ?: "Meh")
+    File(projectPath).walk(FileWalkDirection.BOTTOM_UP).forEach {
+        Button(onClick = { updateBufferObject(it.readLines().joinToString("\n")) }) {
+            Text(it.path)
+        }
+    }
 }

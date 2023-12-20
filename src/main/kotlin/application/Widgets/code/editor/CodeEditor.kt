@@ -22,17 +22,20 @@ import androidx.compose.ui.text.*
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import application.Widgets.bufferObject
+import application.Widgets.bufferState
 import application.Widgets.code.editor.textStructure.Direction
+import application.Widgets.code.editor.textStructure.GapBuffer
 import application.Widgets.lineToShow
 import application.compiler.Compiler
 
 val printableCharacters =
-    "`~ёЁ!1@2\"3№#4;$5%6:^7&?8*9(0)-_+=qwertyuiop[{]}asdfghjkl;':zxcvbnm,<.>/?йцукенгшщзхъ/\\|фывапролджэячсмитьбю., QWERTYUIOPLKJHGFDSAZXCVBNMЁЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮ\n\t".toCharArray()
+    "`~ёЁ!1@2\"3№#4;$5%6:^7&?8*9(0)-_+=qwertyuiop[{]}asdfghjkl;':zxcvbnm,<.>/?йцукенгшщзхъ/\\|фывапролджэячсмитьбю., QWERTYUIOPLKJHGFDSAZXCVBNMЁЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮ\n\tэ\'\"".toCharArray()
 
 @OptIn(ExperimentalTextApi::class, ExperimentalComposeUiApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun CodeEditor() {
+    val bufferObject = bufferState.value
+
     // Определяем фокусировку
     val requester = remember { FocusRequester() }
     val isFocused = remember { mutableStateOf(false) }
@@ -79,7 +82,8 @@ fun CodeEditor() {
 
                     Key.Backspace -> bufferObject.deleteSymbol(Direction.LEFT)
                     Key.Enter -> bufferObject.addSymbol('\n')
-                    else -> bufferObject.addSymbol(it.utf16CodePoint.toChar())
+                    else -> if (printableCharacters.contains(it.utf16CodePoint.toChar()))
+                        bufferObject.addSymbol(it.utf16CodePoint.toChar())
                 }
 
                 carriagePlace.value = bufferObject.carriage
@@ -134,7 +138,7 @@ fun CodeEditor() {
         }
     }
 
-//    LaunchedEffect(lineToShow.value) {
-//
-//    }
+    LaunchedEffect(bufferObject) {
+        lineToShow.value = bufferObject.showText()
+    }
 }

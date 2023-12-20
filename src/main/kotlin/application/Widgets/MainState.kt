@@ -23,5 +23,10 @@ val inputText = """
     
     print(f1);
 """.trimIndent()
-val bufferObject = GapBuffer(gapBufferSize = 4, text = inputText)
-var lineToShow = mutableStateOf(bufferObject.showText())
+
+val bufferState = mutableStateOf(GapBuffer(gapBufferSize = 4, text = inputText))
+var lineToShow = mutableStateOf(bufferState.value.showText())
+
+fun updateBufferObject(text: String) {
+    bufferState.value = GapBuffer(gapBufferSize = 4, text = text)
+}

@@ -3,13 +3,11 @@ package application.Widgets.project.structure
 import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import application.Widgets.bufferObject
+import application.Widgets.bufferState
 import application.compiler.Compiler
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.newFixedThreadPoolContext
+import kotlinx.coroutines.*
 
+@OptIn(DelicateCoroutinesApi::class)
 @Composable
 fun codeRunner() {
     var backgroundWork: Job? = null
@@ -23,7 +21,7 @@ fun codeRunner() {
 
             backgroundWork = GlobalScope.launch {
                 launch(codeExecutionThread) {
-                    val compiler = Compiler(bufferObject.showText())
+                    val compiler = Compiler(bufferState.value.showText())
 
                     compiler.run { currentCodeOutput.value += (it + "\n") }
                 }
