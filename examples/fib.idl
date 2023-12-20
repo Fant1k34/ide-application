@@ -1,5 +1,5 @@
 func plusOne(n) {
-    return n + 1;
+    return n + 11;
 }
 
 var f1 = 0, f2 = 1, tmpNumb = 1;

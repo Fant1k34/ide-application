@@ -4,13 +4,9 @@ import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
-import application.Widgets.projectDir
-import application.Widgets.setProjectDir
-import application.Widgets.updateFileToEdit
+import application.Widgets.*
 import com.darkrockstudios.libraries.mpfilepicker.DirectoryPicker
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import java.io.File
 
 val currentCodeOutput = mutableStateOf("")
@@ -41,6 +37,21 @@ fun projectStructureWidget() {
                 updateFileToEdit(it.absolutePath)
             }) {
                 Text(it.path)
+            }
+        }
+    }
+
+    GlobalScope.launch(Dispatchers.IO) {
+        launch {
+            while (true) {
+                delay(1000)
+
+                val currentFile = editableFilename.value?.let { File(it) } ?: continue
+                val textToWrite = bufferState.value?.showText() ?: continue
+
+                if (currentFile.canWrite()) {
+                    currentFile.writeText(textToWrite)
+                }
             }
         }
     }
