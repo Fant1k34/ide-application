@@ -1,0 +1,18 @@
+func plusOne(n) {
+    return n + 1;
+}
+
+var f1 = 0, f2 = 1, tmpNumb = 1;
+
+proc fib(n) {
+    if (tmpNumb < n) {
+        var tmp = f2;
+        f2 = f2 + f1;
+        f1 = tmp;
+        tmpNumb = plusOne(tmpNumb);
+        fib(n);
+    }
+}
+
+fib(20);
+print(f2);

@@ -24,9 +24,33 @@ val inputText = """
     print(f1);
 """.trimIndent()
 
-val bufferState = mutableStateOf(GapBuffer(gapBufferSize = 4, text = inputText))
-var lineToShow = mutableStateOf(bufferState.value.showText())
+val editableFilename = mutableStateOf<String?>(null)
+val fileContent = mutableStateOf<String?>(null)
+val bufferState = mutableStateOf<GapBuffer?>(null)
+var lineToShow = mutableStateOf<String?>(bufferState.value?.showText())
 
-fun updateBufferObject(text: String) {
-    bufferState.value = GapBuffer(gapBufferSize = 4, text = text)
+fun updateFileToEdit(newFileToEdit: String) {
+    println(newFileToEdit)
+
+    editableFilename.value = newFileToEdit
+
+    println(editableFilename.value)
+
+    fileContent.value = editableFilename.value?.let {
+        val currentFile = File(it)
+        if (currentFile.canRead()) {
+            return@let currentFile.readLines().joinToString("\n")
+        }
+        return@let null
+    }
+
+    println(fileContent.value)
+
+    bufferState.value = fileContent.value?.let {
+        GapBuffer(gapBufferSize = 4, text = it)
+    }
+
+    println(bufferState.value)
+
+    lineToShow.value = bufferState.value?.showText()
 }

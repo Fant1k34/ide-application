@@ -21,7 +21,9 @@ fun codeRunner() {
 
             backgroundWork = GlobalScope.launch {
                 launch(codeExecutionThread) {
-                    val compiler = Compiler(bufferState.value.showText())
+                    val buffer = bufferState.value ?: return@launch
+
+                    val compiler = Compiler(buffer.showText())
 
                     compiler.run { currentCodeOutput.value += (it + "\n") }
                 }

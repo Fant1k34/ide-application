@@ -34,7 +34,7 @@ val printableCharacters =
 @OptIn(ExperimentalTextApi::class, ExperimentalComposeUiApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun CodeEditor() {
-    val bufferObject = bufferState.value
+    val bufferObject = bufferState.value ?: return
 
     // Определяем фокусировку
     val requester = remember { FocusRequester() }
@@ -94,7 +94,7 @@ fun CodeEditor() {
         .onFocusChanged { focusState -> isFocused.value = focusState.isFocused }
         .focusable()
     ) {
-        val line = lineToShow.value
+        val line = lineToShow.value ?: return@Canvas
 
         // Рисуем весь текст черным цветом без прозрачности
         val measuredText = textMeasurer.measure(
@@ -136,9 +136,5 @@ fun CodeEditor() {
                 drawText(measuredCarriage)
             }
         }
-    }
-
-    LaunchedEffect(bufferObject) {
-        lineToShow.value = bufferObject.showText()
     }
 }
