@@ -48,17 +48,18 @@ fun IDEFeatureColumn(
                 featureName = "G",
                 choseLeftWidget = choseLeftWidget
             )
+
+            IDEFeatureItem(
+                feature = Widgets.RUNTIME,
+                featureName = "R",
+                choseLeftWidget = choseLeftWidget
+            )
         }
 
         Column(
             modifier = Modifier
                 .fillMaxHeight(), verticalArrangement = Arrangement.Bottom
         ) {
-            IDEFeatureItem(
-                feature = Widgets.RUNTIME,
-                featureName = "R",
-                choseLeftWidget = choseLeftWidget
-            )
             IDEFeatureItem(
                 feature = Widgets.DEBUG,
                 featureName = "D",

@@ -5,7 +5,10 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import application.Widgets.bufferObject
+import application.Widgets.projectDir
+import application.Widgets.setProjectDir
 import application.compiler.Compiler
+import com.darkrockstudios.libraries.mpfilepicker.DirectoryPicker
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -16,33 +19,27 @@ import kotlinx.coroutines.newFixedThreadPoolContext
 import kotlinx.coroutines.newSingleThreadContext
 
 val currentCodeOutput = mutableStateOf("")
+val isProjectChosen = mutableStateOf(false)
+val isModalOfDirectoryChoiceOpen = mutableStateOf(false)
 
 @OptIn(DelicateCoroutinesApi::class, ExperimentalCoroutinesApi::class)
 @Composable
 fun projectStructureWidget() {
-    var backgroundWork: Job? = null
-    var codeExecutionThread = newFixedThreadPoolContext(1, "Code Runner")
-
-    Button(onClick = {
-        try {
-            codeExecutionThread.close()
-            codeExecutionThread = newFixedThreadPoolContext(1, "Code Runner")
-            currentCodeOutput.value = ""
-
-            backgroundWork = GlobalScope.launch {
-                launch(codeExecutionThread) {
-                    val compiler = Compiler(bufferObject.showText())
-
-                    compiler.run { currentCodeOutput.value += (it + "\n") }
-                }
-            }
-
-            println("Successful compilation")
-        } catch (e: Exception) {
-            println("Compilation exception ${e.message}")
-        }
-    }) {
-        Text("Запустить")
+    Button(onClick = { isModalOfDirectoryChoiceOpen.value = true }) {
+        Text("Open new project")
     }
-    Text("Output:\n${currentCodeOutput.value}")
+
+    if (!isProjectChosen.value) {
+        DirectoryPicker(isModalOfDirectoryChoiceOpen.value) { path ->
+            isModalOfDirectoryChoiceOpen.value = false
+
+            if (path != null) {
+                setProjectDir(path)
+            }
+        }
+    }
+
+    if (projectDir.value == null) return
+
+    Text(projectDir.value ?: "Meh")
 }
