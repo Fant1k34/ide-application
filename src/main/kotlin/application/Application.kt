@@ -10,8 +10,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
-import application.IDEContent.IDEContentRow
-import application.IDEMenu.IDEMenuRow
+import application.ui.IDEContent.IDEContentRow
+import application.ui.IDEMenu.IDEMenuRow
 
 /**
  * IDE Application consists of these parts:
