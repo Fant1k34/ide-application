@@ -18,11 +18,9 @@ import com.darkrockstudios.libraries.mpfilepicker.DirectoryPicker
 import kotlinx.coroutines.*
 import java.io.File
 
-val currentCodeOutput = mutableStateOf("")
 val isProjectChosen = mutableStateOf(false)
 val isModalOfDirectoryChoiceOpen = mutableStateOf(false)
 
-@OptIn(DelicateCoroutinesApi::class)
 @Composable
 fun projectStructureWidget() {
     val filesInProject = remember { mutableStateOf(listOf<File>()) }
@@ -47,6 +45,18 @@ fun projectStructureWidget() {
                 isCreateModalActive.value = true
             }) {
                 Text("+")
+            }
+        }
+
+        if (chosenFileInProjectStructureWidget.value != null) {
+            Button(onClick = {
+                val fileToDelete = chosenFileInProjectStructureWidget.value
+
+                if (fileToDelete != null) {
+                    mainStore.deleteRecursively(fileToDelete)
+                }
+            }) {
+                Text("D")
             }
         }
     }

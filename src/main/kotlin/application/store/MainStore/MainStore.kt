@@ -27,6 +27,12 @@ class MainStore {
         setCarriagePlace()
     }
 
+    fun resetBuffer() {
+        gapBuffer = null
+        lineToShow.value = null
+        setCarriagePlace()
+    }
+
     fun moveCarriageLeft() {
         gapBuffer?.moveCarriage(Direction.LEFT)
         setCarriagePlace()
@@ -84,10 +90,8 @@ class MainStore {
     }
 
     fun createNewFile(isFile: Boolean, startLocation: String, filename: String) {
-        val projectPathValue = projectPath.value
         writeToCurrentFile()
 
-        projectPath.value = null
         println(startLocation + File.separator + filename)
 
         if (isFile) {
@@ -95,10 +99,14 @@ class MainStore {
         } else {
             Files.createDirectory(Paths.get(startLocation + File.separator + filename))
         }
-
-        projectPath.value = projectPathValue
     }
 
+    fun deleteRecursively(fileToDelete: File) {
+        writeToCurrentFile()
+        resetBuffer()
+
+        fileToDelete.deleteRecursively()
+    }
 
     val currentFile = mutableStateOf<File?>(null)
 
