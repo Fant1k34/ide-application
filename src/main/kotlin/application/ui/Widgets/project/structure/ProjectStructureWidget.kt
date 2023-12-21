@@ -1,5 +1,6 @@
 package application.ui.Widgets.project.structure
 
+import MinimalDialog
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
@@ -26,6 +27,7 @@ val isModalOfDirectoryChoiceOpen = mutableStateOf(false)
 fun projectStructureWidget() {
     val filesInProject = remember { mutableStateOf(listOf<File>()) }
     val chosenFileInProjectStructureWidget = remember { mutableStateOf<File?>(null) }
+    val isCreateModalActive = remember { mutableStateOf(false) }
 
     Row {
         Button(onClick = { isModalOfDirectoryChoiceOpen.value = true }) {
@@ -39,8 +41,23 @@ fun projectStructureWidget() {
                 Text("S")
             }
         }
+
+        if (chosenFileInProjectStructureWidget.value?.isDirectory == true) {
+            Button(onClick = {
+                isCreateModalActive.value = true
+            }) {
+                Text("+")
+            }
+        }
     }
 
+    if (isCreateModalActive.value) {
+        MinimalDialog({ isFile, filename ->
+            mainStore.createNewFile(
+                isFile, chosenFileInProjectStructureWidget.value?.path ?: return@MinimalDialog, filename
+            )
+        }, { isCreateModalActive.value = false })
+    }
 
     if (!isProjectChosen.value) {
         DirectoryPicker(isModalOfDirectoryChoiceOpen.value) { path ->

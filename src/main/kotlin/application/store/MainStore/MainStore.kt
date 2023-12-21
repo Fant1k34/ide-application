@@ -4,6 +4,8 @@ import androidx.compose.runtime.mutableStateOf
 import application.store.MainStore.textStructure.Direction
 import application.store.MainStore.textStructure.GapBuffer
 import java.io.File
+import java.nio.file.Files
+import java.nio.file.Paths
 
 class MainStore {
     val lineToShow = mutableStateOf<String?>(null)
@@ -79,6 +81,22 @@ class MainStore {
 
     fun setProjectPath(path: String) {
         projectPath.value = path
+    }
+
+    fun createNewFile(isFile: Boolean, startLocation: String, filename: String) {
+        val projectPathValue = projectPath.value
+        writeToCurrentFile()
+
+        projectPath.value = null
+        println(startLocation + File.separator + filename)
+
+        if (isFile) {
+            File(startLocation + File.separator + filename).writeText("")
+        } else {
+            Files.createDirectory(Paths.get(startLocation + File.separator + filename))
+        }
+
+        projectPath.value = projectPathValue
     }
 
 
