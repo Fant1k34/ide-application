@@ -12,12 +12,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+
 import application.store.MainStore.mainStore
 import application.ui.modifyIDEFeature
 import com.darkrockstudios.libraries.mpfilepicker.DirectoryPicker
 import kotlinx.coroutines.*
 import java.io.File
 
+val currentCodeOutput = mutableStateOf("")
 val isProjectChosen = mutableStateOf(false)
 val isModalOfDirectoryChoiceOpen = mutableStateOf(false)
 

@@ -17,6 +17,8 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.input.key.*
+import androidx.compose.ui.platform.ClipboardManager
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.*
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -32,6 +34,7 @@ fun CodeEditor() {
     // Определяем фокусировку
     val requester = remember { FocusRequester() }
     val isFocused = remember { mutableStateOf(false) }
+    val clipboard: ClipboardManager = LocalClipboardManager.current
 
     // Место каретки в тексте
     val textMeasurer = rememberTextMeasurer()
@@ -51,7 +54,13 @@ fun CodeEditor() {
         .onClick { requester.requestFocus() }
         // Обрабатываем нажатия кнопок в случае фокусировки на этом канвасе
         .onKeyEvent {
-            if (it.type == KeyEventType.KeyUp) {
+            if (it.type == KeyEventType.KeyDown) {
+                if (it.isCtrlPressed && it.key == Key.V) {
+                    clipboard.getText()?.forEach { newIt ->
+                        mainStore.addSymbol(newIt)
+                    }
+                }
+
                 when (it.key) {
                     Key.DirectionRight -> mainStore.moveCarriageRight()
                     Key.DirectionLeft -> mainStore.moveCarriageLeft()
